@@ -13,11 +13,21 @@ type client struct { // client는 한 명의 채팅 사용자를 나타낸다.
 func (c *client) read() {
 	defer c.socket.Close()
 	for {
-		_, msg, err := c.socket.ReadMessage()
+		_, msg, err := c.socket.ReadMessage() // 소켓에서 읽고
 		if err != nil {
 			return
 		}
 
-		c.room.forward <- msg
+		c.room.forward <- msg // room의 forward 채널로 계속 전송
+	}
+}
+
+func (c *client) write() {
+	defer c.socket.Close()
+	for msg := range c.send {
+		err := c.socket.WriteMessage(websocket.TextMessage, msg) // 메시지를 계속 수신
+		if err != nil {
+			return
+		}
 	}
 }

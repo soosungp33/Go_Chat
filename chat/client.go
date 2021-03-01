@@ -25,7 +25,7 @@ func (c *client) read() {
 func (c *client) write() {
 	defer c.socket.Close()
 	for msg := range c.send {
-		err := c.socket.WriteMessage(websocket.TextMessage, msg) // 메시지를 계속 수신
+		err := c.socket.WriteMessage(websocket.TextMessage, msg) // 소켓에서 메시지를 계속 수신
 		if err != nil {
 			return
 		}

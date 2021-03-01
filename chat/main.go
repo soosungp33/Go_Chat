@@ -20,7 +20,7 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) { //
 		t.templ = template.Must(template.ParseFiles(filepath.Join("templates", t.filename)))
 	})
 
-	t.templ.Execute(w, nil)
+	t.templ.Execute(w, nil) // 응답으로 템플릿을 건네줌
 }
 
 func main() {

@@ -34,7 +34,7 @@ func main() {
 	flag.Parse()                                                            // 플래그 파싱
 
 	r := newRoom()
-	r.tracer = trace.New(os.Stdout)                           // 추적 결과를 터미널로 출력
+	r.tracer = trace.New(os.Stdout)                           // 추적 결과를 터미널로 출력(Trace의 t에 쓰인 내용이 터미널에 나옴)
 	http.Handle("/", &templateHandler{filename: "chat.html"}) // 경로에 요청이 오는지 수신 대기(요청이 오면 HTML 보내기)
 	http.Handle("/room", r)
 

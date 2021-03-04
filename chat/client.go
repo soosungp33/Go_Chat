@@ -12,7 +12,7 @@ type client struct { // client는 한 명의 채팅 사용자를 나타낸다.
 
 func (c *client) read() {
 	defer c.socket.Close()
-	for {
+	for { // 무한루프
 		_, msg, err := c.socket.ReadMessage() // 소켓에서 읽고
 		if err != nil {
 			return

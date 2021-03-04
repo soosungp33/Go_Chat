@@ -16,8 +16,8 @@ type tracer struct {
 }
 
 func (t *tracer) Trace(a ...interface{}) { // 빈 인터페이스는 어떠한 타입도 담을 수 있는 컨테이너라고 볼 수 있다.
-	fmt.Fprint(t.out, a...)
-	fmt.Fprintln(t.out)
+	fmt.Fprint(t.out, a...) // t에 쓰고
+	fmt.Fprintln(t.out)     // 줄바꿈
 }
 
 func New(w io.Writer) Tracer {

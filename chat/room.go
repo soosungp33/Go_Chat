@@ -1,5 +1,12 @@
 package main
 
+import (
+	"log"
+	"net/http"
+
+	"github.com/gorilla/websocket"
+)
+
 type room struct {
 	forward chan []byte // forward는 수신 메시지를 보관하는 채널이며 수신한 메시지는 다른 클라이언트로 전달돼야 한다
 	// join과 leave는 clients 맵에서 클라이언트를 안전하게 추가 및 제거하기 위해 존재
@@ -25,4 +32,30 @@ func (r *room) run() {
 			}
 		}
 	}
+}
+
+const (
+	socketBufferSize  = 1024
+	messageBufferSize = 256
+)
+
+// 웹 소켓을 사용하려면 websocket.Upgrader 타입을 사용해 HTTP 연결을 업그레이드 해야 한다.(재사용 가능)
+var upgrader = &websocket.Upgrader{ReadBufferSize: socketBufferSize, WriteBufferSize: socketBufferSize}
+
+func (r *room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	socket, err := upgrader.Upgrade(w, req, nil) // 소켓 가져오기
+	if err != nil {
+		log.Fatal("ServeHTTP: ", err)
+		return
+	}
+
+	client := &client{ //  문제가 없다면 클라이언트 생성
+		socket: socket,
+		send:   make(chan []byte, messageBufferSize),
+		room:   r,
+	}
+	r.join <- client // 생성한 클라이언트를 join채널에 전달
+	defer func() { r.leave <- client }()
+	go client.write() // 고루틴으로 클라이언트의 write 메소드를 호출
+	client.read()     // 메인 스레드에서 read 메소드를 호출해 닫을 때까지 작업을 차단(연결을 활성 상태로 유지)
 }

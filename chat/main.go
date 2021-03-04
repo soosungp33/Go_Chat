@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"net/http"
 	"path/filepath"
@@ -20,10 +21,15 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) { //
 		t.templ = template.Must(template.ParseFiles(filepath.Join("templates", t.filename)))
 	})
 
-	t.templ.Execute(w, nil) // 응답으로 템플릿을 보낸다.
+	t.templ.Execute(w, r) // 응답으로 템플릿을 보낸다.
+	// r을 data인수로 전달하므로써 http.Request에서 추출할 수 있는 데이터를 사용해 템플릿을 표시하도록 지시(호스트 주소가 포함됨)
+	// 따라서 chat.html 파일의 소켓 생성하는 라인에서 {{.Host}}를 사용할 수 있다.
 }
 
 func main() {
+	var addr = flag.String("addr", ":8080", "The addr of the application.") // *string 타입을 반환(주소)
+	flag.Parse()                                                            // 플래그 파싱
+
 	r := newRoom()
 	http.Handle("/", &templateHandler{filename: "chat.html"}) // 경로에 요청이 오는지 수신 대기(요청이 오면 HTML 보내기)
 	http.Handle("/room", r)
@@ -32,7 +38,8 @@ func main() {
 	go r.run() // 고루틴을 통해 채팅 작업을 백그라운드에서 실행(메인하고 같이 동시에 돌고 run이 무한루프for문이므로 계속 돈다.)
 
 	// 	웹 서버 시작
-	err := http.ListenAndServe(":8080", nil) // 8080 포트에서 웹 서버 시작
+	log.Println("Starting web server on", *addr)
+	err := http.ListenAndServe(*addr, nil) // 8080 포트에서 웹 서버 시작
 	if err != nil {
 		log.Fatal("ListenAndServe:", err)
 	}

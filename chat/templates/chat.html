@@ -42,7 +42,7 @@
         if (!window["WebSocket"]) {
           alert("오류: 브라우저가 웹 소켓을 지원하지 않습니다.")
         } else {
-          socket = new WebSocket("ws://localhost:8080/room");
+          socket = new WebSocket("ws://{{.Host}}/room"); // {{.Host}}는 request.Host의 값으로 대체하는 것과 본질적으로 같다.(즉, 8080포트)
           socket.onclose = function() {
             alert("연결이 종료됐습니다.");
           }

@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/websocket"
+	"github.com/soosungp33/Go_MSA/trace"
 )
 
 type room struct {
@@ -13,6 +14,7 @@ type room struct {
 	join    chan *client     // 방에 들어오려는 클라이언트를 위한 채널
 	leave   chan *client     // 방을 나가길 원하는 클라이언트를 위한 채널
 	clients map[*client]bool // 현재 채팅방에 있는 모든 클라이언트를 보유
+	tracer  trace.Tracer     // tracer는 방 안에서 활동의 추적 정보를 수신한다.
 }
 
 func newRoom() *room { // 채팅방 만드는 함수
@@ -30,14 +32,17 @@ func (r *room) run() {
 		case client := <-r.join: // join 채널에서 메시지를 받으면
 			// 입장
 			r.clients[client] = true
+			r.tracer.Trace("New client joined")
 		case client := <-r.leave: // leave 채널에서 메시지를 받으면
 			// 퇴장
 			delete(r.clients, client)
 			close(client.send)
+			r.tracer.Trace("Client left")
 		case msg := <-r.forward: // forward 채널에서 메시지를 받으면
 			// 모든 클라이언트에게 메시지 전달
 			for client := range r.clients {
 				client.send <- msg // 각 클라이언트의 send 채널에 메시지를 추가하고 클라이언트 타입의 write 메소드가 이를 받아들여 소켓에서 브라우저로 보낸다.
+				r.tracer.Trace(" -- set to client")
 			}
 		}
 	}

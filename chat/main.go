@@ -24,7 +24,12 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) { //
 }
 
 func main() {
+	r := newRoom()
 	http.Handle("/", &templateHandler{filename: "chat.html"}) // 경로에 요청이 오는지 수신 대기(요청이 오면 HTML 보내기)
+	http.Handle("/room", r)
+
+	// 방을 가져옴
+	go r.run() // 고루틴을 통해 채팅 작업을 백그라운드에서 실행
 
 	// 	웹 서버 시작
 	err := http.ListenAndServe(":8080", nil) // 8080 포트에서 웹 서버 시작

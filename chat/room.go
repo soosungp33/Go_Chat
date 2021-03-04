@@ -15,6 +15,15 @@ type room struct {
 	clients map[*client]bool // 현재 채팅방에 있는 모든 클라이언트를 보유
 }
 
+func newRoom() *room { // 채팅방 만드는 함수
+	return &room{
+		forward: make(chan []byte),
+		join:    make(chan *client),
+		leave:   make(chan *client),
+		clients: make(map[*client]bool),
+	}
+}
+
 func (r *room) run() {
 	for {
 		select { // 한 번에 한 케이스 코드만 실행되므로 맵이 동시에 여러 개 수정되는 가능성을 방지하며 동기화한다.

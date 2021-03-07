@@ -34,6 +34,7 @@ func main() {
 	//r.tracer = trace.New(os.Stdout)                           // 추적 결과를 터미널로 출력하고 싶을 때 사용(Trace의 t에 쓰인 내용이 터미널에 나옴)
 	http.Handle("/", MustAuth(&templateHandler{filename: "chat.html"})) // 경로에 요청이 오는지 수신 대기(요청이 오면 HTML 보내기)
 	// MustAuth는 authHandler를 통한 권한 수행이 먼저 실행되고 인증되면 templateHandler가 실행된다.
+	http.Handle("/login", &templateHandler{filename: "login.html"})
 
 	http.Handle("/room", r)
 

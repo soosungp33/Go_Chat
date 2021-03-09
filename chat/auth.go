@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
+
+	"github.com/stretchr/gomniauth"
 )
 
 type authHandler struct {
@@ -41,7 +42,18 @@ func loginHandler(w http.ResponseWriter, r *http.Request) { // 단순한 함수�
 	provider := segs[3]
 	switch action {
 	case "login": // 동작 값을 알고 있으면 실행
-		log.Println("TODO handle login for", provider)
+		provider, err := gomniauth.Provider(provider) // URL에 지정된 객체(google or github 등)와 일치하는 프로바이더 객체를 가져온다.
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Error when trying to get provider %s: %s", provider, err), http.StatusBadRequest)
+			return
+		}
+		loginUrl, err := provider.GetBeginAuthURL(nil, nil) // 인증 프로세스를 시작하기 위해 사용자를 보내야 하는 위치를 가져온다.
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Error when trying to GetBeginAuthURL for %s:%s", provider, err), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Location", loginUrl) // GetBeginAuthURL 호출시 오류가 없으면 사용자의 브라우저를 반환된 URL로 리디렉션한다.
+		w.WriteHeader(http.StatusTemporaryRedirect)
 	default: // 아니면 오류 메시지 출력
 		w.WriteHeader(http.StatusNotFound)
 		fmt.Fprintf(w, "Auth action %s not supported", action)

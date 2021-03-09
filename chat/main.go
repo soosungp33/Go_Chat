@@ -7,6 +7,11 @@ import (
 	"path/filepath"
 	"sync"
 	"text/template"
+
+	"github.com/stretchr/gomniauth"
+	"github.com/stretchr/gomniauth/providers/facebook"
+	"github.com/stretchr/gomniauth/providers/github"
+	"github.com/stretchr/gomniauth/providers/google"
 )
 
 type templateHandler struct { // 템플릿을 로드하고 컴파일하며 전달하는 구조체
@@ -29,6 +34,13 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) { //
 func main() {
 	var addr = flag.String("addr", ":8080", "The addr of the application.") // *string 타입을 반환(주소)
 	flag.Parse()                                                            // 플래그 파싱
+	// gomniauth 설정
+	gomniauth.SetSecurityKey("PUT YOUR AUTH KEY HERE")
+	gomniauth.WithProviders(
+		facebook.New("key", "secret", "http://localhost:8080/auth/callback/facebook"),
+		github.New("key", "secret", "http://localhost:8080/auth/callback/github"),
+		google.New("key", "secret", "http://localhost:8080/auth/callback/google"),
+	)
 
 	r := newRoom()
 	//r.tracer = trace.New(os.Stdout)                           // 추적 결과를 터미널로 출력하고 싶을 때 사용(Trace의 t에 쓰인 내용이 터미널에 나옴)

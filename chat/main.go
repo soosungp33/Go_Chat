@@ -35,7 +35,7 @@ func main() {
 	http.Handle("/", MustAuth(&templateHandler{filename: "chat.html"})) // 경로에 요청이 오는지 수신 대기(요청이 오면 HTML 보내기)
 	// MustAuth는 authHandler를 통한 권한 수행이 먼저 실행되고 인증되면 templateHandler가 실행된다.
 	http.Handle("/login", &templateHandler{filename: "login.html"})
-
+	http.HandleFunc("/auth/", loginHandler)
 	http.Handle("/room", r)
 
 	// 방을 가져옴

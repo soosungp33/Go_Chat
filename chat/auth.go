@@ -77,7 +77,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) { // 단순한 함수�
 		}).MustBase64()
 		http.SetCookie(w, &http.Cookie{ // 나중에 사용할 수 있도록 auth 쿠키 값으로 저장한다.(func (h *authHandler) ServeHTTP 메소드에서 사용)
 			Name:  "auth",
-			Value: authCookieValue,
+			Value: authCookieValue, // auth의 value 값에 user name이 저장되어 있다.
 			Path:  "/"})
 
 		w.Header().Set("Location", "/chat") // 원래 목적지인 chat으로 리다이렉션

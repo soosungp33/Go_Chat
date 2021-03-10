@@ -12,6 +12,7 @@ import (
 	"github.com/stretchr/gomniauth/providers/facebook"
 	"github.com/stretchr/gomniauth/providers/github"
 	"github.com/stretchr/gomniauth/providers/google"
+	"github.com/stretchr/objx"
 )
 
 type templateHandler struct { // 템플릿을 로드하고 컴파일하며 전달하는 구조체
@@ -26,7 +27,15 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) { //
 		t.templ = template.Must(template.ParseFiles(filepath.Join("templates", t.filename)))
 	})
 
-	t.templ.Execute(w, r) // 응답으로 템플릿을 보낸다.
+	// 전체 http.Request 객체를 전달하는 것 대신에 Host 및 UserData가 있는 데이터를 만들어 전달한다.
+	data := map[string]interface{}{
+		"Host": r.Host,
+	}
+	if authCookie, err := r.Cookie("auth"); err == nil {
+		data["UserData"] = objx.MustFromBase64(authCookie.Value) // authCookie.Value는 user name이 저장되어 있다.
+	}
+
+	t.templ.Execute(w, data) // 응답으로 템플릿을 보낸다.
 	// r을 data인수로 전달하므로써 http.Request에서 추출할 수 있는 데이터를 사용해 템플릿을 표시하도록 지시(호스트 주소가 포함됨)
 	// 따라서 chat.html 파일의 소켓 생성하는 라인에서 {{.Host}}를 사용할 수 있다.
 }

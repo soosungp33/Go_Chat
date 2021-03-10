@@ -52,7 +52,8 @@
             messages.append(
               $("<li>").append(
                 $("<strong>").text(msg.Name + ": "), // 보낸 사람의 이름이 나타나게하고
-                $("<span>").text(msg.Message) // 그 다음 메시지가 나타나게 설정
+                $("<span>").text(msg.Message), // 그 다음 메시지가 나타나게 설정
+                $("<string>").text("   시간 : " + msg.When) 
               )
             );
           }

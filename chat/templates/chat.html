@@ -34,7 +34,7 @@
             return false;
           }
 
-          socket.send(msgBox.val());
+          socket.send(JSON.stringify({"Message": msgBox.val()})); // JSON 객체를 문자열로 직렬화한 후 서버로 보낸다.(Go에서 JSON문자열을 message 객체로 디코딩해 클라이언트 JSON 객체의 필드 이름을 message 타입의 필드 이름과 일치시킨다.)
           msgBox.val("");
           return false;
 
@@ -47,8 +47,14 @@
           socket.onclose = function() {
             alert("연결이 종료됐습니다.");
           }
-          socket.onmessage = function(e) {
-            messages.append($("<li>").text(e.data));
+          socket.onmessage = function(e) { // 콜백함수
+            var msg = JSON.parse(e.data) // JSON 문자열을 자바스크립트 객체로 변환
+            messages.append(
+              $("<li>").append(
+                $("<strong>").text(msg.Name + ": "), // 보낸 사람의 이름이 나타나게하고
+                $("<span>").text(msg.Message) // 그 다음 메시지가 나타나게 설정
+              )
+            );
           }
         }
 

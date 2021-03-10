@@ -6,10 +6,11 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/soosungp33/Go_MSA/trace"
+	"github.com/stretchr/objx"
 )
 
 type room struct {
-	forward chan []byte // forward는 수신 메시지를 보관하는 채널이며 수신한 메시지는 다른 클라이언트로 전달돼야 한다
+	forward chan *message // forward는 수신 메시지를 보관하는 채널이며 수신한 메시지는 다른 클라이언트로 전달돼야 한다
 	// join과 leave는 clients 맵에서 클라이언트를 안전하게 추가 및 제거하기 위해 존재
 	join    chan *client     // 방에 들어오려는 클라이언트를 위한 채널
 	leave   chan *client     // 방을 나가길 원하는 클라이언트를 위한 채널
@@ -19,7 +20,7 @@ type room struct {
 
 func newRoom() *room { // 채팅방 만드는 함수
 	return &room{
-		forward: make(chan []byte),
+		forward: make(chan *message),
 		join:    make(chan *client),
 		leave:   make(chan *client),
 		clients: make(map[*client]bool),
@@ -41,6 +42,7 @@ func (r *room) run() {
 			r.tracer.Trace("Client left")
 		case msg := <-r.forward: // forward 채널에서 메시지를 받으면
 			// 모든 클라이언트에게 메시지 전달
+			r.tracer.Trace("Message received: ", string(msg.Message))
 			for client := range r.clients {
 				client.send <- msg // 각 클라이언트의 send 채널에 메시지를 추가하고 클라이언트 타입의 write 메소드가 이를 받아들여 소켓에서 브라우저로 보낸다.
 				r.tracer.Trace(" -- set to client")
@@ -57,17 +59,23 @@ const (
 // 웹 소켓을 사용하려면 websocket.Upgrader 타입을 사용해 HTTP 연결을 업그레이드 해야 한다.(재사용 가능)
 var upgrader = &websocket.Upgrader{ReadBufferSize: socketBufferSize, WriteBufferSize: socketBufferSize}
 
-func (r *room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+func (r *room) ServeHTTP(w http.ResponseWriter, req *http.Request) { // 사용자 데이터는 http.Request 객체의 Cookie 메소드를 통해 액세스하는 클라이언트 쿠키에서 가져온다.
 	socket, err := upgrader.Upgrade(w, req, nil) // 소켓 가져오기
 	if err != nil {
 		log.Fatal("ServeHTTP: ", err)
 		return
 	}
+	authCookie, err := req.Cookie("auth") // 클라이언트에 전달하기 전에 사용자 데이터를 가져온다.
+	if err != nil {
+		log.Fatal("Failed to get auth cookie:", err)
+		return
+	}
 
 	client := &client{ //  문제가 없다면 클라이언트 생성
-		socket: socket,
-		send:   make(chan []byte, messageBufferSize),
-		room:   r,
+		socket:   socket,
+		send:     make(chan *message, messageBufferSize),
+		room:     r,
+		userData: objx.MustFromBase64(authCookie.Value), // objx.MustFromBase64를 통해 인코딩된 쿠키 값을 사용가능한 맵 객체로 변환
 	}
 	r.join <- client // 생성한 클라이언트를 join채널에 전달
 	defer func() { r.leave <- client }()

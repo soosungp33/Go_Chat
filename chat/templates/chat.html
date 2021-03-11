@@ -51,7 +51,7 @@
             var msg = JSON.parse(e.data) // JSON 문자열을 자바스크립트 객체로 변환
             messages.append(
               $("<li>").append(
-                $("img").css({
+                $("img").css({ // 프로필 사진
                   width:50,
                   verticalAlign: "middle"
                 }).sttr("src", msg.AvatarURL),

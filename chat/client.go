@@ -10,7 +10,7 @@ type client struct { // client는 한 명의 채팅 사용자를 나타낸다.
 	socket   *websocket.Conn        // socket은 이 클라이언트의 웹 소켓이다(클라이언트와 통신할 수 있는 웹 소켓에 대한 참조)
 	send     chan *message          // send는 메시지가 전송되는 채널
 	room     *room                  // room은 클라이언트가 채팅하는 방
-	userData map[string]interface{} // userDatasms는 사용자에 대한 정보를 보유한다.
+	userData map[string]interface{} // userDatasms는 사용자에 대한 정보를 보유한다.(문자열을 키로 가지고 모든 자료형을 저장할 수 있는 map)
 }
 
 // 글을 쓰면 소켓에 글이 들어감.
@@ -27,9 +27,11 @@ func (c *client) read() {
 		}
 		msg.When = time.Now()
 		msg.Name = c.userData["name"].(string)
-		if avatarURL, ok := c.userData["avatar_url"]; ok { // 프로필 사진이 있으면
-			msg.AvatarURL = avatarURL.(string)
-		}
+		/*
+			if avatarURL, ok := c.userData["avatar_url"]; ok { // 프로필 사진이 있으면
+				msg.AvatarURL = avatarURL.(string)
+			}*/
+		msg.AvatarURL, _ = c.room.avatar.GetAvatarURL(c) // 직접 URL을 추출하는 대신 room의 avatar 인스턴스에서 URL을 가져온다.
 
 		c.room.forward <- msg // room의 forward 채널로 계속 전송
 	}

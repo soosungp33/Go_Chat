@@ -71,6 +71,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) { // 단순한 함수�
 		authCookieValue := objx.New(map[string]interface{}{ // 사용자가 있으면 JSON 객체의 Name 필드를 Base64로 인코딩한다.(Base64는 데이터를 URL이나 쿠키에 저장하는 경우 유용하다.)
 			"name":       user.Name(),      // 사용자명
 			"avatar_url": user.AvatarURL(), // 사용자 사진
+			"email":      user.Email(),
 		}).MustBase64()
 		http.SetCookie(w, &http.Cookie{ // 나중에 사용할 수 있도록 auth 쿠키 값으로 저장한다.(func (h *authHandler) ServeHTTP 메소드에서 사용)
 			Name:  "auth",

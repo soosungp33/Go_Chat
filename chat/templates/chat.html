@@ -51,9 +51,12 @@
             var msg = JSON.parse(e.data) // JSON 문자열을 자바스크립트 객체로 변환
             messages.append(
               $("<li>").append(
+                $("img").css({
+                  width:50,
+                  verticalAlign: "middle"
+                }).sttr("src", msg.AvatarURL),
                 $("<strong>").text(msg.Name + ": "), // 보낸 사람의 이름이 나타나게하고
                 $("<span>").text(msg.Message), // 그 다음 메시지가 나타나게 설정
-                $("<string>").text("   시간 : " + msg.When) 
               )
             );
           }

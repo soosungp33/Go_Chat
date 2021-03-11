@@ -27,7 +27,7 @@ func (c *client) read() {
 		}
 		msg.When = time.Now()
 		msg.Name = c.userData["name"].(string)
-		if avatarURL, ok := c.userData["avator_url"]; ok { // 프로필 사진이 있으면
+		if avatarURL, ok := c.userData["avatar_url"]; ok { // 프로필 사진이 있으면
 			msg.AvatarURL = avatarURL.(string)
 		}
 

@@ -14,20 +14,16 @@ type authHandler struct {
 }
 
 func (h *authHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	_, err := r.Cookie("auth") // auth라는 특수 쿠키를 찾는다.
-	if err == http.ErrNoCookie {
-		// 인증 불가
-		w.Header().Set("Location", "/login") // 쿠키가 없는 경우 로그인 페이지로 리다이렉션한다.
+	// auth라는 특수 쿠키를 찾는다.
+	if cookie, err := r.Cookie("auth"); err == http.ErrNoCookie || cookie.Value == "" { // 쿠키가 없거나(로그인 한 적이 없음) 쿠키의 값이 비어있으면(로그인 한 적은 있는데 로그아웃 한 상태)
+		w.Header().Set("Location", "/login") // 로그인 페이지로 리다이렉션한다.
 		w.WriteHeader(http.StatusTemporaryRedirect)
 		return
+	} else if err != nil { // 다른 에러
+		panic(err.Error())
+	} else { // 성공 - 다음 핸들러 호출
+		h.next.ServeHTTP(w, r)
 	}
-	if err != nil {
-		// 다른 에러
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// 성공 - 다음 핸들러 호출
-	h.next.ServeHTTP(w, r)
 }
 
 // 단순히 다른 http.Handler를 저장(래핑)하는 authHandler이다.

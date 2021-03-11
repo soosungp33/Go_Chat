@@ -48,16 +48,26 @@ func main() {
 	gomniauth.WithProviders(
 		facebook.New("key", "secret", "http://localhost:8080/auth/callback/facebook"),
 		github.New("key", "secret", "http://localhost:8080/auth/callback/github"),
-		google.New("key", "secret", "http://localhost:8080/auth/callback/google"),
+		google.New("1084570662586-jq97d3vj6vmtf2919g567p4at6c7qqrf.apps.googleusercontent.com", "HA9ze1I0TYSN7lFRkoZsl9u_", "http://localhost:8080/auth/callback/google"),
 	)
 
 	r := newRoom()
 	//r.tracer = trace.New(os.Stdout)                           // 추적 결과를 터미널로 출력하고 싶을 때 사용(Trace의 t에 쓰인 내용이 터미널에 나옴)
-	http.Handle("/", MustAuth(&templateHandler{filename: "chat.html"})) // 경로에 요청이 오는지 수신 대기(요청이 오면 HTML 보내기)
+	http.Handle("/", MustAuth(&templateHandler{filename: "chat.html"})) // 경로에 요청이 오는지 수신 대기(요청이 오면 HTML 보내기), 채팅
 	// MustAuth는 authHandler를 통한 권한 수행이 먼저 실행되고 인증되면 templateHandler가 실행된다.
-	http.Handle("/login", &templateHandler{filename: "login.html"})
-	http.HandleFunc("/auth/", loginHandler)
+	http.Handle("/login", &templateHandler{filename: "login.html"}) // 로그인
+	http.HandleFunc("/auth/", loginHandler)                         // 권한 요청
 	http.Handle("/room", r)
+	http.HandleFunc("/logout", func(w http.ResponseWriter, r *http.Request) { // 로그아웃
+		http.SetCookie(w, &http.Cookie{
+			Name:   "auth",
+			Value:  "", // 빈 문자열을 넣어 이전에 저장돼 있던 사용자 데이터를 제거한다.
+			Path:   "/",
+			MaxAge: -1, // 브라우저에서 즉시 삭제돼야 함을 나타낸다.
+		})
+		w.Header().Set("Location", "/chat") // 로그아웃 후 채팅 페이지로 리다이렉션하면 채팅 페이지에서 로그인 페이지로 리다이렉션 된다.
+		w.WriteHeader(http.StatusTemporaryRedirect)
+	})
 
 	// 방을 가져옴
 	go r.run() // 고루틴을 통해 채팅 작업을 백그라운드에서 실행(메인하고 같이 동시에 돌고 run이 무한루프for문이므로 계속 돈다.)

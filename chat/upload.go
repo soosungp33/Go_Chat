@@ -26,5 +26,6 @@ func uploaderHandler(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	// 결론적으로 고유 ID.확장자 로 저장된다.
 	io.WriteString(w, "Successful")
 }

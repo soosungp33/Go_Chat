@@ -53,7 +53,7 @@ var UseFileSystemAvatar FileSystemAvatar
 func (FileSystemAvatar) GetAvatarURL(c *client) (string, error) {
 	if userid, ok := c.userData["userid"]; ok {
 		if useridStr, ok := userid.(string); ok {
-			files, err := ioutil.ReadDir("avatars") // avatars 폴데 있는 파일 목록을 전부 가져온다.(avatars 디렉터리도 포함됨)
+			files, err := ioutil.ReadDir("avatars") // avatars 폴데 있는 파일 목록을 전부 가져온다.(avatars 디렉터리도 포함됨) -> 뒤에 확장자까지 다 저장됨
 			if err != nil {
 				return "", ErrNoAvatarURL
 			}

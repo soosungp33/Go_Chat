@@ -3,6 +3,8 @@ package main
 import (
 	// 해시 패키지
 	"errors"
+	"io/ioutil"
+	"path"
 )
 
 // ErrNoAvatar는 Avatar 인스턴스가 아바타 URL을 제공할 수 없을 때 리턴되는 에러다
@@ -51,7 +53,19 @@ var UseFileSystemAvatar FileSystemAvatar
 func (FileSystemAvatar) GetAvatarURL(c *client) (string, error) {
 	if userid, ok := c.userData["userid"]; ok {
 		if useridStr, ok := userid.(string); ok {
-			return "/avatars/" + useridStr + ".jpg", nil // 하드코딩 -> jpg만 지원
+			files, err := ioutil.ReadDir("avatars") // avatars 폴데 있는 파일 목록을 전부 가져온다.(avatars 디렉터리도 포함됨)
+			if err != nil {
+				return "", ErrNoAvatarURL
+			}
+			for _, file := range files {
+				if file.IsDir() { // 목록에는 디렉터리도 포함되므로 디렉터리면 건너뛴다.
+					continue
+				}
+				if match, _ := path.Match(useridStr+"*", file.Name()); match { // 각 파일이 userid와 일치하는지 확인
+					return "/avatars/" + file.Name(), nil // 일치하면 해당 파일을 찾은 것이므로 경로를 리턴
+				}
+			}
+			//return "/avatars/" + useridStr + ".jpg", nil // 하드코딩 -> jpg만 지원
 		}
 	}
 

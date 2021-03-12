@@ -7,6 +7,7 @@ import (
 	"path"
 )
 
+// avatars 폴더에 업로드한 이미지를 저장
 func uploaderHandler(w http.ResponseWriter, req *http.Request) {
 	userID := req.FormValue("userid")               // HTML 폼에 숨겨진 입력에 배치한 사용자 ID를 가져온다. <input type="hidden" name="userid" value="{{.UserData.userid}}" /> 이부분
 	file, header, err := req.FormFile("avatarFile") // 파일 자체(io.Reader타입), 메타데이터를 포함하는 파일 헤더, 오류 -> 파일 업로드칸에 들어오는 파일

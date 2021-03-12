@@ -70,6 +70,7 @@ func main() {
 		w.Header().Set("Location", "/chat") // 로그아웃 후 채팅 페이지로 리다이렉션하면 채팅 페이지에서 로그인 페이지로 리다이렉션 된다.
 		w.WriteHeader(http.StatusTemporaryRedirect)
 	})
+	http.Handle("/upload", &templateHandler{filename: "upload.html"})
 
 	// 방을 가져옴
 	go r.run() // 고루틴을 통해 채팅 작업을 백그라운드에서 실행(메인하고 같이 동시에 돌고 run이 무한루프for문이므로 계속 돈다.)

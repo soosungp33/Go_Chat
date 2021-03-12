@@ -73,6 +73,10 @@ func main() {
 	http.Handle("/upload", &templateHandler{filename: "upload.html"})
 	http.HandleFunc("/uploader", uploaderHandler) // 업로드 핸들러 매핑
 
+	http.Handle("/avatars/",
+		http.StripPrefix("/avatars/", // 지정된 접두사를 제거해 경로를 수정한 후 핸들러로 전달(제거하지 않으면 /avatars/avatars/filename과 같은 경로가 된다.)
+			http.FileServer(http.Dir("./avatars")))) // 공개할 폴더를 지정
+
 	// 방을 가져옴
 	go r.run() // 고루틴을 통해 채팅 작업을 백그라운드에서 실행(메인하고 같이 동시에 돌고 run이 무한루프for문이므로 계속 돈다.)
 

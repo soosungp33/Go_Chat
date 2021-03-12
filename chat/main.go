@@ -48,7 +48,7 @@ func main() {
 	gomniauth.WithProviders(
 		facebook.New("key", "secret", "http://localhost:8080/auth/callback/facebook"),
 		github.New("key", "secret", "http://localhost:8080/auth/callback/github"),
-		google.New("key", "secret", "http://localhost:8080/auth/callback/google"),
+		google.New("1084570662586-jq97d3vj6vmtf2919g567p4at6c7qqrf.apps.googleusercontent.com", "HA9ze1I0TYSN7lFRkoZsl9u_", "http://localhost:8080/auth/callback/google"),
 	)
 
 	// r:= newRoom()
@@ -71,6 +71,7 @@ func main() {
 		w.WriteHeader(http.StatusTemporaryRedirect)
 	})
 	http.Handle("/upload", &templateHandler{filename: "upload.html"})
+	http.HandleFunc("/uploader", uploaderHandler) // 업로드 핸들러 매핑
 
 	// 방을 가져옴
 	go r.run() // 고루틴을 통해 채팅 작업을 백그라운드에서 실행(메인하고 같이 동시에 돌고 run이 무한루프for문이므로 계속 돈다.)

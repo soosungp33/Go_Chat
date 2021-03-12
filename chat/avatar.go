@@ -38,8 +38,22 @@ var UseGravatar GravatarAvatar
 func (GravatarAvatar) GetAvatarURL(c *client) (string, error) {
 	if userid, ok := c.userData["userid"]; ok {
 		if useridStr, ok := userid.(string); ok { // 사용자 데이터가 있으면
-			return "www.gravatar.com/avatar/" + useridStr, nil // 기본 URL에 추가
+			return "//www.gravatar.com/avatar/" + useridStr, nil // 기본 URL에 추가
 		}
 	}
+	return "", ErrNoAvatarURL
+}
+
+type FileSystemAvatar struct{}
+
+var UseFileSystemAvatar FileSystemAvatar
+
+func (FileSystemAvatar) GetAvatarURL(c *client) (string, error) {
+	if userid, ok := c.userData["userid"]; ok {
+		if useridStr, ok := userid.(string); ok {
+			return "/avatars/" + useridStr + ".jpg", nil // 하드코딩 -> jpg만 지원
+		}
+	}
+
 	return "", ErrNoAvatarURL
 }

@@ -1,7 +1,9 @@
 package main
 
 import (
+	"crypto/md5"
 	"fmt"
+	"io"
 	"net/http"
 	"strings"
 
@@ -68,7 +70,12 @@ func loginHandler(w http.ResponseWriter, r *http.Request) { // 단순한 함수�
 			http.Error(w, fmt.Sprintf("Error when trying to GetBeginAuthURL for %s:%s", provider, err), http.StatusInternalServerError)
 			return
 		}
+
+		m := md5.New()                                      // 해싱
+		io.WriteString(m, strings.ToLower(user.Email()))    // 이메일 주소를 해싱해
+		userId := fmt.Sprintf("%x", m.Sum(nil))             // 결과 문자열을 식별자로 사용
 		authCookieValue := objx.New(map[string]interface{}{ // 사용자가 있으면 JSON 객체의 Name 필드를 Base64로 인코딩한다.(Base64는 데이터를 URL이나 쿠키에 저장하는 경우 유용하다.)
+			"userid":     userId,           // 프로필 사진 변경을 위한 userid
 			"name":       user.Name(),      // 사용자명
 			"avatar_url": user.AvatarURL(), // 사용자 사진
 			"email":      user.Email(),

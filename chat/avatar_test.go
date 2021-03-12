@@ -30,8 +30,9 @@ func TestGravatarAvatar(t *testing.T) {
 	var gravatarAvatar GravatarAvatar
 
 	client := new(client)
+
 	client.userData = map[string]interface{}{ // gravatar는 이메일 주소의 해시를 사용해 각 프로필 이미지의 고유 ID를 생성
-		"email": "soosungp33@gmail.com",
+		"uesrid": "0bc83cb571cd1c50ba6f3e8a78ef1346",
 	}
 	url, err := gravatarAvatar.GetAvatarURL(client)
 	if err != nil {

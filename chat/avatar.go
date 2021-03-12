@@ -1,11 +1,8 @@
 package main
 
 import (
-	"crypto/md5" // 해시 패키지
+	// 해시 패키지
 	"errors"
-	"fmt"
-	"io"
-	"strings"
 )
 
 // ErrNoAvatar는 Avatar 인스턴스가 아바타 URL을 제공할 수 없을 때 리턴되는 에러다
@@ -39,11 +36,9 @@ var UseGravatar GravatarAvatar
 
 // 객체가 nil값을 가질 수 있으므로 리시버의 변수명을 생략해 Go에 참조를 버리라고 전달
 func (GravatarAvatar) GetAvatarURL(c *client) (string, error) {
-	if email, ok := c.userData["email"]; ok {
-		if emailStr, ok := email.(string); ok { // 사용자 데이터가 있으면
-			m := md5.New()
-			io.WriteString(m, strings.ToLower(emailStr))                        // 이메일 주소에서 MD5 해시를 생성
-			return fmt.Sprintf("//www.gravatar.com/avatar/%x", m.Sum(nil)), nil // 기본 URL에 추가
+	if userid, ok := c.userData["userid"]; ok {
+		if useridStr, ok := userid.(string); ok { // 사용자 데이터가 있으면
+			return "www.gravatar.com/avatar/" + useridStr, nil // 기본 URL에 추가
 		}
 	}
 	return "", ErrNoAvatarURL

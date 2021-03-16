@@ -88,7 +88,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) { // 단순한 함수�
 		io.WriteString(m, strings.ToLower(user.Email()))  // 이메일 주소를 해싱해
 		chatUser.uniqueID = fmt.Sprintf("%x", m.Sum(nil)) // 결과 문자열을 식별자로 사용
 
-		avatarURL, err := avatars.GetAvatarURL(chatUser)
+		avatarURL, err := avatars.GetAvatarURL(chatUser) // 먼저 FileSystemAvatar로 가고 프로필 사진이 없다면 AuthAvatar로 인증 서비스 사진을 사용. 이거도 없다면 GravatarAvatar로 가서 임의의 사진을 사용
 		if err != nil {
 			log.Fatalln("Error when trying to GetAvatarURL", "-", err)
 		}

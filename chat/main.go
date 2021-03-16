@@ -15,6 +15,9 @@ import (
 	"github.com/stretchr/objx"
 )
 
+// Avatar 구현을 활성화
+var avatars Avatar = UseFileSystemAvatar // 특정 사용자 아바타 URL을 가져와야 할 때 사용하는 전역변수
+
 type templateHandler struct { // 템플릿을 로드하고 컴파일하며 전달하는 구조체
 	once     sync.Once // 함수를 한 번만 실행하기 위해 사용
 	filename string

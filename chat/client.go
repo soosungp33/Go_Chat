@@ -27,11 +27,10 @@ func (c *client) read() {
 		}
 		msg.When = time.Now()
 		msg.Name = c.userData["name"].(string)
-		/*
-			if avatarURL, ok := c.userData["avatar_url"]; ok { // 프로필 사진이 있으면
-				msg.AvatarURL = avatarURL.(string)
-			}*/
-		msg.AvatarURL, _ = c.room.avatar.GetAvatarURL(c) // 직접 URL을 추출하는 대신 room의 avatar 인스턴스에서 URL을 가져온다.
+
+		if avatarURL, ok := c.userData["avatar_url"]; ok { // 프로필 사진이 있으면
+			msg.AvatarURL = avatarURL.(string)
+		}
 
 		c.room.forward <- msg // room의 forward 채널로 계속 전송
 	}

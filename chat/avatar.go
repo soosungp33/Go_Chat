@@ -17,6 +17,16 @@ type Avatar interface {
 	GetAvatarURL(ChatUser) (string, error) // URL을 리턴할 사용자를 알 수 있도록 클라이언트를 인수로 사용
 }
 
+type TryAvatars []Avatar // 단순히 메소드를 추가할 수 있는 Avatar 객체 슬라이스
+func (a TryAvatars) GetAvatarURL(u ChatUser) (string, error) {
+	for _, avatar := range a {
+		if url, err := avatar.GetAvatarURL(u); err == nil {
+			return url, nil
+		}
+	}
+	return "", ErrNoAvatarURL
+}
+
 type AuthAvatar struct{}
 
 var UseAuthAvatar AuthAvatar
@@ -28,14 +38,6 @@ func (AuthAvatar) GetAvatarURL(u ChatUser) (string, error) {
 		return "", ErrNoAvatarURL
 	}
 	return url, nil
-	/*
-		if url, ok := c.userData["avatar_url"]; ok {
-			if urlStr, ok := url.(string); ok { // 사용자 데이터가 있으면
-				return urlStr, nil
-			}
-		}
-		return "", ErrNoAvatarURL
-	*/
 }
 
 // AuthAvatar와 같은 패턴
@@ -46,14 +48,6 @@ var UseGravatar GravatarAvatar
 // 객체가 nil값을 가질 수 있으므로 리시버의 변수명을 생략해 Go에 참조를 버리라고 전달
 func (GravatarAvatar) GetAvatarURL(u ChatUser) (string, error) {
 	return "//www.gravatar.com/avatar/" + u.UniqueID(), nil
-	/*
-		if userid, ok := c.userData["userid"]; ok {
-			if useridStr, ok := userid.(string); ok { // 사용자 데이터가 있으면
-				return "//www.gravatar.com/avatar/" + useridStr, nil // 기본 URL에 추가
-			}
-		}
-		return "", ErrNoAvatarURL
-	*/
 }
 
 type FileSystemAvatar struct{}
@@ -71,23 +65,6 @@ func (FileSystemAvatar) GetAvatarURL(u ChatUser) (string, error) {
 			}
 		}
 	}
-	/*
-		if userid, ok := c.userData["userid"]; ok {
-			if useridStr, ok := userid.(string); ok {
-				files, err := ioutil.ReadDir("avatars") // avatars 폴더에 있는 파일 목록을 전부 가져온다.(avatars 디렉터리도 포함됨) -> 뒤에 확장자까지 다 저장됨
-				if err != nil {
-					return "", ErrNoAvatarURL
-				}
-				for _, file := range files {
-					if file.IsDir() { // 목록에는 디렉터리도 포함되므로 디렉터리면 건너뛴다.
-						continue
-					}
-					if match, _ := path.Match(useridStr+"*", file.Name()); match { // 각 파일이 userid와 일치하는지 확인
-						return "/avatars/" + file.Name(), nil // 일치하면 해당 파일을 찾은 것이므로 경로를 리턴
-					}
-				}
-			}
-		}*/
 
 	return "", ErrNoAvatarURL
 }

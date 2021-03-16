@@ -16,7 +16,11 @@ import (
 )
 
 // Avatar 구현을 활성화
-var avatars Avatar = UseFileSystemAvatar // 특정 사용자 아바타 URL을 가져와야 할 때 사용하는 전역변수
+var avatars Avatar = TryAvatars{ // 특정 사용자 아바타 URL을 가져와야 할 때 사용하는 전역변수(순서 중요)
+	UseFileSystemAvatar, // 사용자가 사진을 업로드했는지 확인(즉 avatars폴더에 사진이 있다면) (없으면 다음으로)
+	UseAuthAvatar,       // 인증 서비스에 사용할 이미지가 있는지 확인(없으면 다음으로)
+	UseGravatar,         // 둘다 없으면 기본 플레이스홀더 이미지가 표시
+}
 
 type templateHandler struct { // 템플릿을 로드하고 컴파일하며 전달하는 구조체
 	once     sync.Once // 함수를 한 번만 실행하기 위해 사용

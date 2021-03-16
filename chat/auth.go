@@ -19,7 +19,7 @@ type ChatUser interface {
 	AvatarURL() string
 }
 type chatUser struct {
-	gomniauthcommon.User // 임베딩 타입(인터페이스를 자동으로 구현)
+	gomniauthcommon.User // 임베딩 타입(인터페이스를 자동으로 구현) -> Name, Email, AvatarURL을 자동으로 구현
 	uniqueID             string
 }
 

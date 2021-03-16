@@ -16,17 +16,15 @@ type room struct {
 	leave   chan *client     // 방을 나가길 원하는 클라이언트를 위한 채널
 	clients map[*client]bool // 현재 채팅방에 있는 모든 클라이언트를 보유
 	tracer  trace.Tracer     // tracer는 방 안에서 활동의 추적 정보를 수신한다.
-	avatar  Avatar           // 프로필 사진 정보를 얻는 방법이다.(프로필 사진 변경)
 }
 
-func newRoom(avatar Avatar) *room { // 채팅방 만드는 함수
+func newRoom() *room { // 채팅방 만드는 함수
 	return &room{
 		forward: make(chan *message),
 		join:    make(chan *client),
 		leave:   make(chan *client),
 		clients: make(map[*client]bool),
 		tracer:  trace.Off(),
-		avatar:  avatar,
 	}
 }
 

@@ -57,7 +57,8 @@ func main() {
 	// r:= newRoom() // 프로필 사진 x
 	//r := newRoom(UseAuthAvatar) // 프로필 사진 o
 	//r := newRoom(UseGravatar) // 프로필 사진 gravatar 이미지로 변경
-	r := newRoom(UseFileSystemAvatar) // 프로필 사진 업로드 가능
+	//r := newRoom(UseFileSystemAvatar) // 프로필 사진 업로드 가능
+	r := newRoom() // 프로필 사진 업로드 가능(코드 리펙토링), 매개변수 대신 avatars라는 전역변수를 사용
 
 	//r.tracer = trace.New(os.Stdout)                           // 추적 결과를 터미널로 출력하고 싶을 때 사용(Trace의 t에 쓰인 내용이 터미널에 나옴)
 	http.Handle("/", MustAuth(&templateHandler{filename: "chat.html"})) // 경로에 요청이 오는지 수신 대기(요청이 오면 HTML 보내기), 채팅

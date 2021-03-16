@@ -9,7 +9,22 @@ import (
 
 	"github.com/stretchr/gomniauth"
 	"github.com/stretchr/objx"
+
+	gomniauthcommon "github.com/stretchr/gomniauth/common"
 )
+
+type ChatUser interface {
+	UniqueID() string
+	AvatarURL() string
+}
+type chatUser struct {
+	gomniauthcommon.User // 임베딩 타입(인터페이스를 자동으로 구현)
+	uniqueID             string
+}
+
+func (u chatUser) UniqueID() string {
+	return u.uniqueID
+}
 
 type authHandler struct {
 	next http.Handler

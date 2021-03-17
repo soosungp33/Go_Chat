@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/websocket"
-	"github.com/soosungp33/Go_MSA/trace"
+	"github.com/soosungp33/Go_Chat/trace"
 	"github.com/stretchr/objx"
 )
 

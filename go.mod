@@ -1,4 +1,4 @@
-module github.com/soosungp33/Go_MSA
+module github.com/soosungp33/Go_Chat
 
 go 1.16
 

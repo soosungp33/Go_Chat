@@ -55,7 +55,7 @@ func main() {
 	gomniauth.WithProviders(
 		facebook.New("key", "secret", "http://localhost:8080/auth/callback/facebook"),
 		github.New("key", "secret", "http://localhost:8080/auth/callback/github"),
-		google.New("1084570662586-jq97d3vj6vmtf2919g567p4at6c7qqrf.apps.googleusercontent.com", "HA9ze1I0TYSN7lFRkoZsl9u_", "http://localhost:8080/auth/callback/google"),
+		google.New("key", "secret", "http://localhost:8080/auth/callback/google"),
 	)
 
 	// r:= newRoom() // 프로필 사진 x

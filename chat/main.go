@@ -93,7 +93,7 @@ func main() {
 	go r.run() // 고루틴을 통해 채팅 작업을 백그라운드에서 실행(메인하고 같이 동시에 돌고 run이 무한루프for문이므로 계속 돈다.)
 
 	// 	웹 서버 시작
-	log.Println("Starting web server on", *addr)
+	log.Println("starting web server on", *addr)
 	err := http.ListenAndServe(*addr, nil) // 8080 포트에서 웹 서버 시작
 	if err != nil {
 		log.Fatal("ListenAndServe:", err)

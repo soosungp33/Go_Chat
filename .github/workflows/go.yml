@@ -29,9 +29,9 @@ jobs:
     
     - name: build and release to DockerHub
       env:
-        REPO: soosungp33 # 계정 명
-        LAYER_NAME: actiontest # 레포 이름
+        NAME: soosungp33 # 계정 명
+        REPO: actiontest # 레포 이름
       run: |
-        docker build -t $LAYER_NAME .
-        docker tag $LAYER_NAME:latest $REPO/$LAYER_NAME:latest
-        docker push $REPO/$LAYER_NAME:latest
+        docker build -t $REPO .
+        docker tag $REPO:latest $NAME/$REPO:latest
+        docker push $NAME/$REPO:latest

@@ -52,10 +52,12 @@ func main() {
 	flag.Parse()                                                            // 플래그 파싱
 	// gomniauth 설정
 	gomniauth.SetSecurityKey("PUT YOUR AUTH KEY HERE")
+	//ClientID := os.Getenv("GOOGLE_CHAT_CLIENT_ID")
+	//ClientSecret := os.Getenv("GOOGLE_CHAT_SECRET_KEY")
 	gomniauth.WithProviders(
 		facebook.New("key", "secret", "http://localhost:8080/auth/callback/facebook"),
 		github.New("key", "secret", "http://localhost:8080/auth/callback/github"),
-		google.New("key", "secret", "http://localhost:8080/auth/callback/google"),
+		google.New("1084570662586-14rfm2mu23rhlomcg8kev9blfdmko7ak.apps.googleusercontent.com", "wo1M79Z2Aa-3j2sjQpBbO6sM", "http://localhost:8080/auth/callback/google"),
 	)
 
 	// r:= newRoom() // 프로필 사진 x
